@@ -388,15 +388,15 @@ def _attack(params):
         client = paramiko.SSHClient()
         client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
-        pem_path = params.get('key_name') and _get_pem_path(params['key_name']) or None
-        if not os.path.isfile(pem_path):
+        pem_path = paramiko.RSAKey.from_private_key_file(_get_pem_path(params['key_name']))
+        if not os.path.isfile(_get_pem_path(params['key_name'])):
             client.load_system_host_keys()
             client.connect(params['instance_name'], username=params['username'])
         else:
             client.connect(
                 params['instance_name'],
                 username=params['username'],
-                key_filename=pem_path)
+                pkey=pem_path)
 
         print('Bee %i is firing her machine gun. Bang bang!' % params['i'])
 
